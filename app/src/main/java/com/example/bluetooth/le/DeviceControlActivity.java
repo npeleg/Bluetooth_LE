@@ -1,26 +1,31 @@
 package com.example.bluetooth.le;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.bluetooth.BluetoothGattCharacteristic;
 import android.bluetooth.BluetoothGattService;
 import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.ServiceConnection;
 import android.os.Bundle;
 import android.os.IBinder;
+import android.text.InputType;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ExpandableListView;
 import android.widget.SimpleExpandableListAdapter;
+import android.widget.EditText;
 import android.widget.TextView;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+
 /**
  * For a given BLE device, this Activity provides the user interface to connect, display data,
  * and display GATT services and characteristics supported by the device.  The Activity
@@ -32,7 +37,7 @@ public class DeviceControlActivity extends Activity {
     public static final String EXTRAS_DEVICE_NAME = "DEVICE_NAME";
     public static final String EXTRAS_DEVICE_ADDRESS = "DEVICE_ADDRESS";
     //private TextView mConnectionState;
-    //private TextView mDataField;
+    private TextView mDataField;
     private String mDeviceName;
     private String mDeviceAddress;
     private ExpandableListView mGattServicesList;
@@ -43,6 +48,7 @@ public class DeviceControlActivity extends Activity {
     private BluetoothGattCharacteristic mNotifyCharacteristic;
     private final String LIST_NAME = "NAME";
     private final String LIST_UUID = "UUID";
+    private String m_Text = "";
 
     // Code to manage Service lifecycle.
     private final ServiceConnection mServiceConnection = new ServiceConnection() {
@@ -123,16 +129,41 @@ public class DeviceControlActivity extends Activity {
                         }
 
                         if ((charaProp & BluetoothGattCharacteristic.PROPERTY_WRITE) > 0) {
-                            byte[] value = characteristic.getValue(); // TODO implement according to Amir's code
                             if (mNotifyCharacteristic != null) {
                                 mBluetoothLeService.setCharacteristicNotification(
                                         mNotifyCharacteristic, false);
                                 mNotifyCharacteristic = null;
                             }
-                            Log.d(TAG, "writing characteristic" + characteristic.getUuid());
-                            characteristic.setValue(value);
-                            characteristic.setWriteType(BluetoothGattCharacteristic.WRITE_TYPE_DEFAULT);
-                            mBluetoothLeService.writeCharacteristic(characteristic);
+
+                            AlertDialog.Builder builder = new AlertDialog.Builder
+                                    (DeviceControlActivity.this);
+                            builder.setTitle("Enter Text");
+                            // Set up the input
+                            final EditText input = new EditText(DeviceControlActivity.this);
+                            // Specify the type of input expected; this, for example, sets the input
+                            // as a password, and will mask the text
+                            input.setInputType(InputType.TYPE_CLASS_DATETIME |
+                                    InputType.TYPE_DATETIME_VARIATION_TIME);
+                            builder.setView(input);
+
+                            // Set up the buttons
+                            builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+                                    m_Text = input.getText().toString();
+                                    Log.d(TAG, "writing characteristic" + characteristic.getUuid());
+                                    characteristic.setValue(m_Text);
+                                    characteristic.setWriteType(BluetoothGattCharacteristic.WRITE_TYPE_DEFAULT);
+                                    mBluetoothLeService.writeCharacteristic(characteristic);
+                                }
+                            });
+                            builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+                                    dialog.cancel();
+                                }
+                            });
+                            builder.show();
                         }
                         return true;
                     }
@@ -142,7 +173,7 @@ public class DeviceControlActivity extends Activity {
 
     private void clearUI() {
         mGattServicesList.setAdapter((SimpleExpandableListAdapter) null);
-        //mDataField.setText(R.string.no_data);
+        mDataField.setText(R.string.no_data);
     }
 
     @Override
@@ -157,7 +188,7 @@ public class DeviceControlActivity extends Activity {
         mGattServicesList = (ExpandableListView) findViewById(R.id.gatt_services_list);
         mGattServicesList.setOnChildClickListener(servicesListClickListner);
         //mConnectionState = (TextView) findViewById(R.id.connection_state);
-        //mDataField = (TextView) findViewById(R.id.data_value);
+        mDataField = (TextView) findViewById(R.id.data_value);
         getActionBar().setTitle(mDeviceName);
         getActionBar().setDisplayHomeAsUpEnabled(true);
         Intent gattServiceIntent = new Intent(this, BluetoothLeService.class);
@@ -227,7 +258,7 @@ public class DeviceControlActivity extends Activity {
 
     private void displayData(String data) {
         if (data != null) {
-            //mDataField.setText(data);
+            mDataField.setText(data);
         }
     }
 

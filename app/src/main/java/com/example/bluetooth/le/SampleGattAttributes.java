@@ -15,8 +15,8 @@ public class SampleGattAttributes {
         // Sample Characteristics.
         attributes.put(HEART_RATE_MEASUREMENT, "Heart Rate Measurement");
         attributes.put("00002a29-0000-1000-8000-00805f9b34fb", "Manufacturer Name String");
-        attributes.put("0000fff1-0000-1000-8000-00805f9b34fb", "Wi-Fi name");
-        attributes.put("0000fff2-0000-1000-8000-00805f9b34fb", "Wi-Fi password");
+        attributes.put("0000fff1-0000-1000-8000-00805f9b34fb", "Current Hour");
+        attributes.put("0000fff2-0000-1000-8000-00805f9b34fb", "Current Minutes");
         attributes.put("0000fff3-0000-1000-8000-00805f9b34fb", "Morning Time");
         attributes.put("0000fff4-0000-1000-8000-00805f9b34fb", "Afternoon Time");
         attributes.put("0000fff5-0000-1000-8000-00805f9b34fb", "Evening time");
