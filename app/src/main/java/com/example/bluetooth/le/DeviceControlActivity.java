@@ -48,7 +48,7 @@ public class DeviceControlActivity extends Activity {
     private BluetoothGattCharacteristic mNotifyCharacteristic;
     private final String LIST_NAME = "NAME";
     private final String LIST_UUID = "UUID";
-    private String m_Text = "";
+    private int m_Text;
 
     // Code to manage Service lifecycle.
     private final ServiceConnection mServiceConnection = new ServiceConnection() {
@@ -150,10 +150,10 @@ public class DeviceControlActivity extends Activity {
                             builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
                                 @Override
                                 public void onClick(DialogInterface dialog, int which) {
-                                    m_Text = input.getText().toString();
-                                    Log.d(TAG, "writing characteristic" + characteristic.getUuid());
-                                    characteristic.setValue(m_Text);
-                                    characteristic.setWriteType(BluetoothGattCharacteristic.WRITE_TYPE_DEFAULT);
+                                    m_Text = Integer.parseInt(input.getText().toString());
+                                    Log.d(TAG, "writing " + m_Text + " to characteristic " + characteristic.getUuid());
+                                    characteristic.setValue(Integer.toString(m_Text));
+                                    characteristic.setWriteType(BluetoothGattCharacteristic.WRITE_TYPE_NO_RESPONSE);
                                     mBluetoothLeService.writeCharacteristic(characteristic);
                                 }
                             });
@@ -315,6 +315,7 @@ public class DeviceControlActivity extends Activity {
                 new int[] { android.R.id.text1} //, android.R.id.text2 }
         );
         mGattServicesList.setAdapter(gattServiceAdapter);
+        mGattServicesList.expandGroup(0);
     }
 
     private static IntentFilter makeGattUpdateIntentFilter() {

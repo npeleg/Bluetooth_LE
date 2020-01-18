@@ -220,16 +220,19 @@ public class DeviceScanActivity extends ListActivity {
             if (view == null) {
                 view = mInflator.inflate(R.layout.listitem_device, null);
                 viewHolder = new ViewHolder();
-                //viewHolder.deviceAddress = (TextView) view.findViewById(R.id.device_address);
+                viewHolder.found_pill_box_text = (TextView) view.findViewById(R.id.found_pill_box);
+                viewHolder.click_to_configure_text = (TextView) view.findViewById(R.id.click_to_configure);
                 viewHolder.deviceName = (TextView) view.findViewById(R.id.device_name);
+                //viewHolder.deviceAddress = (TextView) view.findViewById(R.id.device_address);
                 view.setTag(viewHolder);
             } else {
                 viewHolder = (ViewHolder) view.getTag();
             }
             BluetoothDevice device = mLeDevices.get(i);
             final String deviceName = device.getName();
-            if (deviceName != null && deviceName.length() > 0)
-                viewHolder.deviceName.setText(deviceName);
+            if (deviceName != null && deviceName.length() > 0) {
+                viewHolder.deviceName.setText("(name: " + deviceName + ")");
+            }
             else
                 viewHolder.deviceName.setText(R.string.unknown_device);
             //viewHolder.deviceAddress.setText(device.getAddress());
@@ -255,6 +258,8 @@ public class DeviceScanActivity extends ListActivity {
             };
 
     static class ViewHolder {
+        TextView found_pill_box_text;
+        TextView click_to_configure_text;
         TextView deviceName;
         //TextView deviceAddress;
     }
