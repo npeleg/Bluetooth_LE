@@ -245,7 +245,7 @@ public class DeviceScanActivity extends ListActivity {
             new BluetoothAdapter.LeScanCallback() {
                 @Override
                 public void onLeScan(final BluetoothDevice device, int rssi, byte[] scanRecord) {
-                    if (device.getAddress().equals("CC:78:AB:AE:40:85")) {
+                    if (device.getAddress().startsWith("CC:78:AB:AE")) {
                         runOnUiThread(new Runnable() {
                             @Override
                             public void run() {
